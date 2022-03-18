@@ -5,8 +5,15 @@ import 'package:flutter/material.dart';
 /// Custom Search input field, showing the search and clear icons.
 class SearchInput extends StatefulWidget {
   final ValueChanged<String> onSearchInput;
+  final Widget searchIcon;
+  final Widget clearSearchIcon;
+  final Color bgColor;
 
-  SearchInput(this.onSearchInput);
+  SearchInput(
+      {@required this.onSearchInput,
+      this.searchIcon,
+      this.clearSearchIcon,
+      this.bgColor});
 
   @override
   State<StatefulWidget> createState() => SearchInputState();
@@ -57,11 +64,14 @@ class SearchInputState extends State<SearchInput> {
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: Row(
         children: <Widget>[
-          Icon(Icons.search, color: Theme.of(context).textTheme.bodyText1.color),
+          widget.searchIcon ??
+              Icon(Icons.search,
+                  color: Theme.of(context).textTheme.bodyText1.color),
           SizedBox(width: 8),
           Expanded(
             child: TextField(
-              decoration: InputDecoration(hintText: "Search place", border: InputBorder.none),
+              decoration: InputDecoration(
+                  hintText: "Search place", border: InputBorder.none),
               controller: this.editController,
               onChanged: (value) {
                 setState(() {
@@ -73,7 +83,7 @@ class SearchInputState extends State<SearchInput> {
           SizedBox(width: 8),
           if (this.hasSearchEntry)
             GestureDetector(
-              child: Icon(Icons.clear),
+              child: widget.clearSearchIcon ?? Icon(Icons.clear),
               onTap: () {
                 this.editController.clear();
                 setState(() {
@@ -85,7 +95,7 @@ class SearchInputState extends State<SearchInput> {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: Theme.of(context).canvasColor,
+        color: widget.bgColor ?? Theme.of(context).canvasColor,
       ),
     );
   }
