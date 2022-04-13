@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 /// Custom Search input field, showing the search and clear icons.
 class SearchInput extends StatefulWidget {
   final ValueChanged<String> onSearchInput;
-  final Widget searchIcon;
-  final Widget clearSearchIcon;
-  final Color bgColor;
+  final Widget? searchIcon;
+  final Widget? clearSearchIcon;
+  final Color? bgColor;
 
   SearchInput(
-      {@required this.onSearchInput,
+      {required this.onSearchInput,
       this.searchIcon,
       this.clearSearchIcon,
       this.bgColor});
@@ -22,7 +22,7 @@ class SearchInput extends StatefulWidget {
 class SearchInputState extends State<SearchInput> {
   TextEditingController editController = TextEditingController();
 
-  Timer debouncer;
+  Timer? debouncer;
 
   bool hasSearchEntry = false;
 
@@ -50,7 +50,7 @@ class SearchInputState extends State<SearchInput> {
     }
 
     if (this.debouncer?.isActive ?? false) {
-      this.debouncer.cancel();
+      this.debouncer!.cancel();
     }
 
     this.debouncer = Timer(Duration(milliseconds: 500), () {
@@ -66,7 +66,7 @@ class SearchInputState extends State<SearchInput> {
         children: <Widget>[
           widget.searchIcon ??
               Icon(Icons.search,
-                  color: Theme.of(context).textTheme.bodyText1.color),
+                  color: Theme.of(context).textTheme.bodyText1!.color),
           SizedBox(width: 8),
           Expanded(
             child: TextField(
