@@ -16,6 +16,7 @@ class PickerDemoState extends State<PickerDemo> {
           child: Text("Pick Delivery location"),
           onPressed: () {
             showPlacePicker();
+            TextFormField();
           },
         ),
       ),
@@ -23,10 +24,18 @@ class PickerDemoState extends State<PickerDemo> {
   }
 
   void showPlacePicker() async {
-    LocationResult result = await Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => PlacePicker("YOUR API KEY")));
+    LocationResult result = await Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) =>
+            PlacePicker("AIzaSyB6fYb4hOZ85U6svCEyLodBRvCMyrmdMmM")));
 
     // Handle the result in your way
-    print(result);
+    print(result.country?.name);
+    print(result.administrativeAreaLevel1?.name);
+    print(result.city?.name);
+    print(result.formattedAddress);
+    print(result.postalCode);
+    print(result.locality);
+    print(result.name);
+    print(result.placeId);
   }
 }

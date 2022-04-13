@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -26,8 +27,10 @@ class PlacePicker extends StatefulWidget {
   /// map does not pan to the user's current location.
   final LatLng displayLocation;
   LocalizationItem localizationItem;
+  final Widget leadingIcon;
 
-  PlacePicker(this.apiKey, {this.displayLocation, this.localizationItem}) {
+  PlacePicker(this.apiKey,
+      {this.displayLocation, this.localizationItem, this.leadingIcon}) {
     if (this.localizationItem == null) {
       this.localizationItem = new LocalizationItem();
     }
@@ -96,54 +99,61 @@ class PlacePickerState extends State<PlacePicker> {
     return Scaffold(
       appBar: AppBar(
         key: this.appBarKey,
-        title: SearchInput(onSearchInput: searchPlace),
+        title: SearchInput(
+            onSearchInput: searchPlace,
+            searchIcon: widget.leadingIcon ??
+                Icon(
+                    Platform.isAndroid
+                        ? Icons.arrow_back
+                        : Icons.navigate_before,
+                    color: Theme.of(context).iconTheme.color)),
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
       body: Column(
         children: <Widget>[
-          Expanded(
-            child: GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: widget.displayLocation ?? LatLng(5.6037, 0.1870),
-                zoom: 15,
-              ),
-              myLocationButtonEnabled: true,
-              myLocationEnabled: true,
-              onMapCreated: onMapCreated,
-              onTap: (latLng) {
-                clearOverlay();
-                moveToLocation(latLng);
-              },
-              markers: markers,
-            ),
-          ),
-          if (!this.hasSearchTerm)
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SelectPlaceAction(
-                      getLocationName(),
-                      () => Navigator.of(context).pop(this.locationResult),
-                      widget.localizationItem.tapToSelectLocation),
-                  Divider(height: 8),
-                  Padding(
-                    child: Text(widget.localizationItem.nearBy,
-                        style: TextStyle(fontSize: 16)),
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  ),
-                  Expanded(
-                    child: ListView(
-                      children: nearbyPlaces
-                          .map((it) => NearbyPlaceItem(
-                              it, () => moveToLocation(it.latLng)))
-                          .toList(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          // Expanded(
+          //   child: GoogleMap(
+          //     initialCameraPosition: CameraPosition(
+          //       target: widget.displayLocation ?? LatLng(5.6037, 0.1870),
+          //       zoom: 15,
+          //     ),
+          //     myLocationButtonEnabled: true,
+          //     myLocationEnabled: true,
+          //     onMapCreated: onMapCreated,
+          //     onTap: (latLng) {
+          //       clearOverlay();
+          //       moveToLocation(latLng);
+          //     },
+          //     markers: markers,
+          //   ),
+          // ),
+          // if (!this.hasSearchTerm)
+          //   Expanded(
+          //     child: Column(
+          //       crossAxisAlignment: CrossAxisAlignment.start,
+          //       children: <Widget>[
+          //         SelectPlaceAction(
+          //             getLocationName(),
+          //             () => Navigator.of(context).pop(this.locationResult),
+          //             widget.localizationItem.tapToSelectLocation),
+          //         Divider(height: 8),
+          //         Padding(
+          //           child: Text(widget.localizationItem.nearBy,
+          //               style: TextStyle(fontSize: 16)),
+          //           padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          //         ),
+          //         Expanded(
+          //           child: ListView(
+          //             children: nearbyPlaces
+          //                 .map((it) => NearbyPlaceItem(
+          //                     it, () => moveToLocation(it.latLng)))
+          //                 .toList(),
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
         ],
       ),
     );
@@ -325,7 +335,12 @@ class PlacePickerState extends State<PlacePicker> {
       builder: (context) => Positioned(
         width: size.width,
         top: appBarBox.size.height,
-        child: Material(elevation: 1, child: Column(children: suggestions)),
+        child: Material(
+            elevation: 1,
+            child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: suggestions)),
       ),
     );
 
@@ -400,6 +415,7 @@ class PlacePickerState extends State<PlacePicker> {
         // this is to require the result to show
         this.hasSearchTerm = false;
       });
+      Navigator.of(context).pop(this.locationResult);
     } catch (e) {
       //
     }
